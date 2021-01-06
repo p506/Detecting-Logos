@@ -15,7 +15,7 @@ using namespace cv;
 
 //! [declare]
 /// Global Variables
-Mat img; Mat templ; Mat result;
+Mat img; Mat templ; Mat result; Mat compImage;
 const char* image_window = "Source Image";
 //const char* result_window = "Result window";
 
@@ -108,10 +108,15 @@ int main(int argc, char** argv)
     }
     Point matchLoc = matchResult[cor_index].mPosition;
     //! [find correct position]
+    
+	//! [Crop Logo]
+    Rect matchRc(matchLoc.x, matchLoc.y, templ.cols, templ.rows);
+    compImage = img(matchRc);
+	//! [Crop Logo]
 	
     //! [imshow]
 	/// Show me what you got
-	rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
+	//rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 
     imshow(image_window, img);
