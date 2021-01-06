@@ -15,9 +15,10 @@ using namespace cv;
 
 //! [declare]
 /// Global Variables
-Mat img; Mat templ; Mat result; Mat compImage;
-const char* image_window = "Source Image";
-//const char* result_window = "Result window";
+Mat img; Mat templ; Mat result; Mat cropImage; Mat compImage;
+const char* comp_window = "Compare Image";
+const char* crop_window = "Crop window";
+const char* templ_window = "Templ window";
 
 const int group_threshold = 4;
 const int max_Method = 5;
@@ -39,8 +40,8 @@ int main(int argc, char** argv)
 {
     //! [Debug Code]
     argc = 3;
-    argv[1] = (char*)"images/letter/apple.jpg";
-    argv[2] = (char*)"images/logo/apple.jpg";
+    argv[1] = (char*)"images/letter/1.jpg";
+    argv[2] = (char*)"images/logo/4.jpg";
     //! [Debug Code]
     
     if (argc < 2)
@@ -54,7 +55,10 @@ int main(int argc, char** argv)
     /// Load image and template
     img = imread(argv[1], IMREAD_COLOR);
     templ = imread(argv[2], IMREAD_COLOR);
-
+    //! [exception resize templ]
+    while(templ.rows > img.rows || templ.cols > img.cols)
+        resize(templ, templ, Size(), 0.5, 0.5);
+    //! [exception resize templ]
     if (img.empty() || templ.empty())
     {
         cout << "Can't read one of the images" << endl;
@@ -64,8 +68,12 @@ int main(int argc, char** argv)
 
     //! [create_windows]
     /// Create windows
-    namedWindow(image_window, WINDOW_AUTOSIZE);
-    //namedWindow(result_window, WINDOW_AUTOSIZE);
+    namedWindow(comp_window, WINDOW_NORMAL);
+	namedWindow(crop_window, WINDOW_NORMAL);
+	namedWindow(templ_window, WINDOW_NORMAL);
+	moveWindow(comp_window,  100, 20);
+	moveWindow(crop_window,  500, 20);
+	moveWindow(templ_window, 900, 20);
     //! [create_windows]
 
     //! [create_trackbar]
@@ -111,16 +119,26 @@ int main(int argc, char** argv)
     
 	//! [Crop Logo]
     Rect matchRc(matchLoc.x, matchLoc.y, templ.cols, templ.rows);
-    compImage = img(matchRc);
+    cropImage = img(matchRc);
 	//! [Crop Logo]
+    
+    //! [Compare Image]
+    compare(cropImage, templ, compImage, CMP_EQ);
+    cvtColor(compImage, compImage, COLOR_RGB2GRAY);
+    int percentage = countNonZero(compImage);
+    //! [Compare Image]
 	
     //! [imshow]
 	/// Show me what you got
 	//rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 
-    imshow(image_window, img);
-	//imshow(result_window, result);
+
+	cout << percentage;
+	
+    imshow(comp_window, compImage);
+	imshow(crop_window, cropImage);
+	imshow(templ_window, templ);
 	//! [imshow]
     //! 
     //! [wait_key]
