@@ -6,8 +6,8 @@
 *.lo
 *.o
 *.obj
-x64/Debug
-DetectLogo/x64/Debug
+./x64/Debug
+./DetectLogo/x64/Debug
 
 # Precompiled Headers
 *.gch

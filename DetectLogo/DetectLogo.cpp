@@ -8,6 +8,7 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 #include <iostream>
+#include <vector> 
 
 using namespace std;
 using namespace cv;
@@ -18,7 +19,14 @@ Mat img; Mat templ; Mat result;
 const char* image_window = "Source Image";
 //const char* result_window = "Result window";
 
-//int max_Trackbar = 5;
+const int group_threshold = 4;
+const int max_Method = 5;
+struct Match
+{
+    Point mPosition;
+    int mCount = 1;
+}match;
+vector <Match> matchResult;
 //! [declare]
 
 /// Function Headers
@@ -66,14 +74,47 @@ int main(int argc, char** argv)
 //     createTrackbar(trackbar_label, image_window, &match_method, max_Trackbar, MatchingMethod);
     //! [create_trackbar]
 
-    Point matchLoc = MatchingMethod(0, 0, 1);
-
-	//! [imshow]
+    //! [find correct position]
+	for (int i = 0; i <= max_Method; i++)
+    {
+        Point pos = MatchingMethod(0, 0, i);
+        int j;
+        for (j = 0; j < matchResult.size(); j++) {
+            if (matchResult[j].mPosition == pos) {
+                matchResult[j].mCount++;
+                break;
+            }
+        }
+        if (j == matchResult.size()) {
+            Match t_match;
+            t_match.mPosition = pos;
+            t_match.mCount = 1;
+            matchResult.push_back(t_match);
+        }
+    }
+    if (matchResult.size() >= group_threshold)
+    {
+        cout << "Can't find logo in the image" << endl;
+        return EXIT_FAILURE;
+    }
+    int cor_index = 0;
+    int max_pick = 0;
+    for (int i = 0; i < matchResult.size(); i++)
+    {
+        if (matchResult[i].mCount > max_pick) {
+            cor_index = i;
+            max_pick = matchResult[i].mCount;
+        }
+    }
+    Point matchLoc = matchResult[cor_index].mPosition;
+    //! [find correct position]
+	
+    //! [imshow]
 	/// Show me what you got
 	rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 
-	imshow(image_window, img);
+    imshow(image_window, img);
 	//imshow(result_window, result);
 	//! [imshow]
     //! 
