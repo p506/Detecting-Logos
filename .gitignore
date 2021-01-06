@@ -6,10 +6,14 @@
 *.lo
 *.o
 *.obj
+x64/Debug
+DetectLogo/x64/Debug
 
 # Precompiled Headers
 *.gch
 *.pch
+*.pdb
+*.idb
 
 # Compiled Dynamic libraries
 *.so

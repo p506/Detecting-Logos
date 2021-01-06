@@ -14,8 +14,7 @@ using namespace cv;
 
 //! [declare]
 /// Global Variables
-bool use_mask;
-Mat img; Mat templ; Mat mask; Mat result;
+Mat img; Mat templ; Mat result;
 const char* image_window = "Source Image";
 const char* result_window = "Result window";
 
@@ -43,7 +42,7 @@ int main(int argc, char** argv)
     img = imread(argv[1], IMREAD_COLOR);
     templ = imread(argv[2], IMREAD_COLOR);
 
-    if (img.empty() || templ.empty() || (use_mask && mask.empty()))
+    if (img.empty() || templ.empty())
     {
         cout << "Can't read one of the images" << endl;
         return EXIT_FAILURE;
@@ -92,15 +91,8 @@ void MatchingMethod(int, void*)
 
     //! [match_template]
     /// Do the Matching and Normalize
-    bool method_accepts_mask = (TM_SQDIFF == match_method || match_method == TM_CCORR_NORMED);
-    if (use_mask && method_accepts_mask)
-    {
-        matchTemplate(img, templ, result, match_method, mask);
-    }
-    else
-    {
-        matchTemplate(img, templ, result, match_method);
-    }
+    
+    matchTemplate(img, templ, result, match_method);
     //! [match_template]
 
     //! [normalize]
