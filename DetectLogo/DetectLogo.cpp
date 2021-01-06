@@ -31,10 +31,10 @@ void MatchingMethod(int, void*);
  */
 int main(int argc, char** argv)
 {
-    if (argc < 3)
+    if (argc < 2)
     {
         cout << "Not enough parameters" << endl;
-        cout << "Usage:\n" << argv[0] << " <image_name> <template_name> [<mask_name>]" << endl;
+        cout << "Usage:\n" << argv[0] << " <image_name> <template_name>" << endl;
         return -1;
     }
 
@@ -42,11 +42,6 @@ int main(int argc, char** argv)
     /// Load image and template
     img = imread(argv[1], IMREAD_COLOR);
     templ = imread(argv[2], IMREAD_COLOR);
-
-    if (argc > 3) {
-        use_mask = true;
-        mask = imread(argv[3], IMREAD_COLOR);
-    }
 
     if (img.empty() || templ.empty() || (use_mask && mask.empty()))
     {
