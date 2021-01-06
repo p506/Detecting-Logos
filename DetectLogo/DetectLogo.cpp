@@ -16,20 +16,25 @@ using namespace cv;
 /// Global Variables
 Mat img; Mat templ; Mat result;
 const char* image_window = "Source Image";
-const char* result_window = "Result window";
+//const char* result_window = "Result window";
 
-int match_method;
-int max_Trackbar = 5;
+//int max_Trackbar = 5;
 //! [declare]
 
 /// Function Headers
-void MatchingMethod(int, void*);
+Point MatchingMethod(int, void*, int);
 
 /**
  * @function main
  */
 int main(int argc, char** argv)
 {
+    //! [Debug Code]
+    argc = 3;
+    argv[1] = (char*)"images/letter/apple.jpg";
+    argv[2] = (char*)"images/logo/apple.jpg";
+    //! [Debug Code]
+    
     if (argc < 2)
     {
         cout << "Not enough parameters" << endl;
@@ -52,17 +57,26 @@ int main(int argc, char** argv)
     //! [create_windows]
     /// Create windows
     namedWindow(image_window, WINDOW_AUTOSIZE);
-    namedWindow(result_window, WINDOW_AUTOSIZE);
+    //namedWindow(result_window, WINDOW_AUTOSIZE);
     //! [create_windows]
 
     //! [create_trackbar]
     /// Create Trackbar
-    const char* trackbar_label = "Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED";
-    createTrackbar(trackbar_label, image_window, &match_method, max_Trackbar, MatchingMethod);
+//     const char* trackbar_label = "Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED";
+//     createTrackbar(trackbar_label, image_window, &match_method, max_Trackbar, MatchingMethod);
     //! [create_trackbar]
 
-    MatchingMethod(0, 0);
+    Point matchLoc = MatchingMethod(0, 0, 1);
 
+	//! [imshow]
+	/// Show me what you got
+	rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
+	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
+
+	imshow(image_window, img);
+	//imshow(result_window, result);
+	//! [imshow]
+    //! 
     //! [wait_key]
     waitKey(0);
     return EXIT_SUCCESS;
@@ -73,12 +87,12 @@ int main(int argc, char** argv)
  * @function MatchingMethod
  * @brief Trackbar callback
  */
-void MatchingMethod(int, void*)
+Point MatchingMethod(int, void*, int match_method)
 {
     //! [copy_source]
     /// Source image to display
-    Mat img_display;
-    img.copyTo(img_display);
+//     Mat img_display;
+//     img.copyTo(img_display);
     //! [copy_source]
 
     //! [create_result_matrix]
@@ -119,14 +133,7 @@ void MatchingMethod(int, void*)
     }
     //! [match_loc]
 
-    //! [imshow]
-    /// Show me what you got
-    rectangle(img_display, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
-    rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
+    
 
-    imshow(image_window, img_display);
-    imshow(result_window, result);
-    //! [imshow]
-
-    return;
+    return matchLoc;
 }
