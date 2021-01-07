@@ -15,7 +15,7 @@ using namespace cv;
 
 //! [declare]
 /// Global Variables
-Mat img; Mat templ; Mat result; Mat cropImage; Mat compImage;
+Mat img; Mat templ; Mat result; Mat cropImage; Mat binImage;
 const char* comp_window = "Compare Image";
 const char* crop_window = "Crop window";
 const char* templ_window = "Templ window";
@@ -32,16 +32,16 @@ vector <Match> matchResult;
 
 /// Function Headers
 Point MatchingMethod(int, void*, int);
-
+void GetEdgeRect(Mat*);
 /**
  * @function main
  */
 int main(int argc, char** argv)
 {
     //! [Debug Code]
-    argc = 3;
-    argv[1] = (char*)"images/letter/1.jpg";
-    argv[2] = (char*)"images/logo/4.jpg";
+//     argc = 3;
+//     argv[1] = (char*)"images/letter/2.jpg";
+//     argv[2] = (char*)"images/logo/2.jpg";
     //! [Debug Code]
     
     if (argc < 2)
@@ -55,10 +55,12 @@ int main(int argc, char** argv)
     /// Load image and template
     img = imread(argv[1], IMREAD_COLOR);
     templ = imread(argv[2], IMREAD_COLOR);
+
     //! [exception resize templ]
     while(templ.rows > img.rows || templ.cols > img.cols)
         resize(templ, templ, Size(), 0.5, 0.5);
     //! [exception resize templ]
+    
     if (img.empty() || templ.empty())
     {
         cout << "Can't read one of the images" << endl;
@@ -68,12 +70,12 @@ int main(int argc, char** argv)
 
     //! [create_windows]
     /// Create windows
-    namedWindow(comp_window, WINDOW_NORMAL);
-	namedWindow(crop_window, WINDOW_NORMAL);
-	namedWindow(templ_window, WINDOW_NORMAL);
-	moveWindow(comp_window,  100, 20);
-	moveWindow(crop_window,  500, 20);
-	moveWindow(templ_window, 900, 20);
+    namedWindow(comp_window, WINDOW_AUTOSIZE);
+// 	namedWindow(crop_window, WINDOW_AUTOSIZE);
+// 	namedWindow(templ_window, WINDOW_AUTOSIZE);
+	moveWindow(comp_window,  20, 20);
+// 	moveWindow(crop_window,  500, 20);
+// 	moveWindow(templ_window, 900, 20);
     //! [create_windows]
 
     //! [create_trackbar]
@@ -123,22 +125,40 @@ int main(int argc, char** argv)
 	//! [Crop Logo]
     
     //! [Compare Image]
-    compare(cropImage, templ, compImage, CMP_EQ);
-    cvtColor(compImage, compImage, COLOR_RGB2GRAY);
-    int percentage = countNonZero(compImage);
+//     compare(cropImage, templ, compImage, CMP_EQ);
+//     cvtColor(compImage, compImage, COLOR_RGB2GRAY);
+//     int percentage = countNonZero(compImage);
+//     cout << percentage;
     //! [Compare Image]
 	
+    //! [get edge rect]
+//    binImage = cropImage.clone();
+ //   threshold(binImage, binImage, 200, 200, 4);
+// 	cout << ((mean(binImage).val[2] - mean(templ).val[2]) - (mean(binImage).val[1] - mean(templ).val[1])) - 
+//         ((mean(binImage).val[1] - mean(templ).val[1]) - (mean(binImage).val[0] - mean(templ).val[0]));
+//     int edgeLeft;
+//     for (int x = 0; x < binImage.rows; x++)
+//     {
+//         for (int y = 0; y < binImage.cols; y++)
+//         {
+//             Vec3b pix = binImage.at<Vec3b>(x, y);
+//             if (pix[0] != pix[1]) {
+//                 edgeLeft = x;
+//             }
+//         }
+//     }
+    //! [get edge rect]
+
     //! [imshow]
 	/// Show me what you got
-	//rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
+	rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
 
 
-	cout << percentage;
 	
-    imshow(comp_window, compImage);
-	imshow(crop_window, cropImage);
-	imshow(templ_window, templ);
+    imshow(comp_window, img);
+// 	imshow(crop_window, cropImage);
+// 	imshow(templ_window, templ);
 	//! [imshow]
     //! 
     //! [wait_key]
@@ -200,4 +220,8 @@ Point MatchingMethod(int, void*, int match_method)
     
 
     return matchLoc;
+}
+
+void GetEdgeRect(Mat* _src) {
+    threshold(*_src, *_src, 50, 255, 3);
 }

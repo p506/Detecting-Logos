@@ -1,0 +1,6 @@
+﻿  DetectLogo.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 174 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  DetectLogo.vcxproj -> D:\Opencv\Project\DetectLogo\x64\Release\DetectLogo.exe

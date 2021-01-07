@@ -85,6 +85,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(OPENCV_DIR)\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OPENCV_DIR)\Release\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,6 +143,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opencv_calib3d450.lib;opencv_core450.lib;opencv_dnn450.lib;opencv_features2d450.lib;opencv_flann450.lib;opencv_gapi450.lib;opencv_highgui450.lib;opencv_imgcodecs450.lib;opencv_imgproc450.lib;opencv_ml450.lib;opencv_objdetect450.lib;opencv_photo450.lib;opencv_stitching450.lib;opencv_ts450.lib;opencv_video450.lib;opencv_videoio450.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
