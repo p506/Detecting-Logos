@@ -1,4 +1,6 @@
 ﻿  DetectLogo.cpp
+D:\Opencv\Project\DetectLogo\DetectLogo\DetectLogo.cpp(48,10): warning C4101: 'pLogo': unreferenced local variable
+D:\Opencv\Project\DetectLogo\DetectLogo\DetectLogo.cpp(47,10): warning C4101: 'pLetter': unreferenced local variable
   Generating code
   Previous IPDB not found, fall back to full compilation.
   All 174 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
