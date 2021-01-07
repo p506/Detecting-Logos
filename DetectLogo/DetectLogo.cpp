@@ -12,7 +12,7 @@
 #include <Windows.h>
 #include <cstdlib>
 
-//#define  _MYDEBUG
+#define  _MYDEBUG
 using namespace std;
 using namespace cv;
 
@@ -23,6 +23,7 @@ const char* comp_window = "Compare Image";
 const char* crop_window = "Crop window";
 const char* templ_window = "Templ window";
 
+const int mean_thresold = 10;
 const int group_threshold = 4;
 const int max_Method = 5;
 struct Match
@@ -51,8 +52,8 @@ int main(int argc, char** argv)
 
 			sprintf_s(pLetter, "images/letter/%d.jpg", i);
 			sprintf_s(pLogo, "images/logo/%d.jpg", j);
-            if(DetectLogo(pLetter, pLogo) && i != j)
-		        cout << i << " : " << j << endl;
+            //if(DetectLogo(pLetter, pLogo) && i != j)
+		        cout << i << " : " << j << " >> " << DetectLogo(pLetter, pLogo) << endl;
             matchResult.clear();
     	}
     }
@@ -87,9 +88,9 @@ bool DetectLogo(char* _letter, char* _logo){
     namedWindow(comp_window, WINDOW_AUTOSIZE);
 	namedWindow(crop_window, WINDOW_AUTOSIZE);
 	namedWindow(templ_window, WINDOW_AUTOSIZE);
-	moveWindow(comp_window,  20, 20);
-	moveWindow(crop_window,  500, 20);
-	moveWindow(templ_window, 900, 20);
+	moveWindow(comp_window,  0, 0);
+	moveWindow(crop_window,  500, 0);
+	moveWindow(templ_window, 900, 0);
     //! [create_windows]
 #endif // _MYDEBUG
     //! [find correct position]
@@ -140,9 +141,12 @@ bool DetectLogo(char* _letter, char* _logo){
 	
     //! [get edge rect]
 //    binImage = cropImage.clone();
- //   threshold(binImage, binImage, 200, 200, 4);
-// 	cout << ((mean(binImage).val[2] - mean(templ).val[2]) - (mean(binImage).val[1] - mean(templ).val[1])) - 
-//         ((mean(binImage).val[1] - mean(templ).val[1]) - (mean(binImage).val[0] - mean(templ).val[0]));
+// 	threshold(cropImage, cropImage, 128, 255, 0);
+// 	threshold(templ, templ, 128, 255, 0);
+	if (abs(mean(cropImage).val[2] - mean(templ).val[2]) 
+        + abs(mean(cropImage).val[1] - mean(templ).val[1]) 
+        + abs(mean(cropImage).val[0] - mean(templ).val[0]) > mean_thresold)
+        return false;
 //     int edgeLeft;
 //     for (int x = 0; x < binImage.rows; x++)
 //     {
