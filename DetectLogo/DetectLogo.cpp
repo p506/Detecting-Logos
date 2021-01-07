@@ -9,13 +9,16 @@
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 #include <vector> 
+#include <Windows.h>
+#include <cstdlib>
 
+//#define  _MYDEBUG
 using namespace std;
 using namespace cv;
 
 //! [declare]
 /// Global Variables
-Mat img; Mat templ; Mat result; Mat cropImage; Mat binImage;
+Mat img; Mat templ; Mat result; Mat cropImage;
 const char* comp_window = "Compare Image";
 const char* crop_window = "Crop window";
 const char* templ_window = "Templ window";
@@ -31,6 +34,7 @@ vector <Match> matchResult;
 //! [declare]
 
 /// Function Headers
+bool DetectLogo(char*, char*);
 Point MatchingMethod(int, void*, int);
 void GetEdgeRect(Mat*);
 /**
@@ -38,23 +42,32 @@ void GetEdgeRect(Mat*);
  */
 int main(int argc, char** argv)
 {
-    //! [Debug Code]
-//     argc = 3;
-//     argv[1] = (char*)"images/letter/2.jpg";
-//     argv[2] = (char*)"images/logo/2.jpg";
-    //! [Debug Code]
-    
-    if (argc < 2)
-    {
-        cout << "Not enough parameters" << endl;
-        cout << "Usage:\n" << argv[0] << " <image_name> <template_name>" << endl;
-        return -1;
-    }
 
+    char pLetter[100];
+    char pLogo[100];
+#ifdef _MYDEBUG
+    for (int i = 1; i <= 18; i++) {
+    	for (int j = 1; j <= 18; j++){
+
+			sprintf_s(pLetter, "images/letter/%d.jpg", i);
+			sprintf_s(pLogo, "images/logo/%d.jpg", j);
+            if(DetectLogo(pLetter, pLogo) && i != j)
+		        cout << i << " : " << j << endl;
+            matchResult.clear();
+    	}
+    }
+#else
+	if (!DetectLogo(argv[1], argv[2]))
+		cout << "Can't find logo in the image" << endl;
+#endif // _MYDEBUG
+
+}
+
+bool DetectLogo(char* _letter, char* _logo){
     //! [load_image]
     /// Load image and template
-    img = imread(argv[1], IMREAD_COLOR);
-    templ = imread(argv[2], IMREAD_COLOR);
+    img = imread(_letter, IMREAD_COLOR);
+    templ = imread(_logo, IMREAD_COLOR);
 
     //! [exception resize templ]
     while(templ.rows > img.rows || templ.cols > img.cols)
@@ -64,26 +77,21 @@ int main(int argc, char** argv)
     if (img.empty() || templ.empty())
     {
         cout << "Can't read one of the images" << endl;
-        return EXIT_FAILURE;
+        return false;
     }
     //! [load_image]
 
+#ifndef _MYDEBUG
     //! [create_windows]
     /// Create windows
     namedWindow(comp_window, WINDOW_AUTOSIZE);
-// 	namedWindow(crop_window, WINDOW_AUTOSIZE);
-// 	namedWindow(templ_window, WINDOW_AUTOSIZE);
+	namedWindow(crop_window, WINDOW_AUTOSIZE);
+	namedWindow(templ_window, WINDOW_AUTOSIZE);
 	moveWindow(comp_window,  20, 20);
-// 	moveWindow(crop_window,  500, 20);
-// 	moveWindow(templ_window, 900, 20);
+	moveWindow(crop_window,  500, 20);
+	moveWindow(templ_window, 900, 20);
     //! [create_windows]
-
-    //! [create_trackbar]
-    /// Create Trackbar
-//     const char* trackbar_label = "Method: \n 0: SQDIFF \n 1: SQDIFF NORMED \n 2: TM CCORR \n 3: TM CCORR NORMED \n 4: TM COEFF \n 5: TM COEFF NORMED";
-//     createTrackbar(trackbar_label, image_window, &match_method, max_Trackbar, MatchingMethod);
-    //! [create_trackbar]
-
+#endif // _MYDEBUG
     //! [find correct position]
 	for (int i = 0; i <= max_Method; i++)
     {
@@ -104,8 +112,7 @@ int main(int argc, char** argv)
     }
     if (matchResult.size() >= group_threshold)
     {
-        cout << "Can't find logo in the image" << endl;
-        return EXIT_FAILURE;
+        return false;
     }
     int cor_index = 0;
     int max_pick = 0;
@@ -148,22 +155,20 @@ int main(int argc, char** argv)
 //         }
 //     }
     //! [get edge rect]
-
+#ifndef _MYDEBUG
     //! [imshow]
 	/// Show me what you got
 	rectangle(img, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
-	//rectangle(result, matchLoc, Point(matchLoc.x + templ.cols, matchLoc.y + templ.rows), Scalar::all(0), 2, 8, 0);
-
-
 	
     imshow(comp_window, img);
-// 	imshow(crop_window, cropImage);
-// 	imshow(templ_window, templ);
+	imshow(crop_window, cropImage);
+	imshow(templ_window, templ);
 	//! [imshow]
-    //! 
     //! [wait_key]
     waitKey(0);
-    return EXIT_SUCCESS;
+#endif // _MYDEBUG
+
+    return true;
     //! [wait_key]
 }
 
@@ -173,12 +178,6 @@ int main(int argc, char** argv)
  */
 Point MatchingMethod(int, void*, int match_method)
 {
-    //! [copy_source]
-    /// Source image to display
-//     Mat img_display;
-//     img.copyTo(img_display);
-    //! [copy_source]
-
     //! [create_result_matrix]
     /// Create the result matrix
     int result_cols = img.cols - templ.cols + 1;
@@ -216,9 +215,6 @@ Point MatchingMethod(int, void*, int match_method)
         matchLoc = maxLoc;
     }
     //! [match_loc]
-
-    
-
     return matchLoc;
 }
 

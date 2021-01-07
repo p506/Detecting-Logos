@@ -1,2 +1,4 @@
 ﻿  DetectLogo.cpp
+D:\Opencv\Project\DetectLogo\DetectLogo\DetectLogo.cpp(47,10): warning C4101: 'pLogo': unreferenced local variable
+D:\Opencv\Project\DetectLogo\DetectLogo\DetectLogo.cpp(46,10): warning C4101: 'pLetter': unreferenced local variable
   DetectLogo.vcxproj -> D:\Opencv\Project\DetectLogo\x64\Debug\DetectLogo.exe
